@@ -1,0 +1,142 @@
+    <%- include('partials/header'); -%>
+
+    <div class="relative mx-5 bg-gray-100 mt-20">
+        <div
+            class="lg:mx-5 sm:mx-auto grid max-w-2xl grid-cols-2 items-center justify-items-center gap-x-8 gap-y-8 px-4 py-12 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8">
+            <div>
+                <h2 class="font-medium tracking-tight text-gray-800 sm:text-3xl">Welcome, Mr.<%=
+                        userPassingData.username %>
+                </h2>
+                <h2 class="font-medium tracking-tight text-gray-800 sm:text-2xl">User ID: <%= userPassingData.id %>
+                </h2>
+                <p class="font-medium text-gray-900 mt-5">Category: <%= userPassingData.category %>
+                </p>
+                <p class="font-medium text-gray-900 mt-5">Depot: <%= userPassingData.depo %>
+                </p>
+                <p class="font-medium text-gray-900 mt-5">Mobile: <%= userPassingData.phone %>
+                </p>
+                <dl class="mt-5 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-16 lg:gap-x-8">
+                    <div class="border-t border-gray-200 pt-4">
+                        <a href="/<%= userPassingData.username %>/leaveform" class="bg-blue-400 hover:opacity-85 rounded-md px-2 py-1">Apply Leave</a>
+                    </div>
+                    <!-- <div class="border-t border-gray-200 pt-4">
+                            <a href=""></a>
+                        </div> -->
+                </dl>
+            </div>
+
+            <div class="bg-gray-100 md:w-40 md:rounded-full">
+                <img src="/images/IMG_10-12-2022(1)-modified.png"
+                    alt="Profile Pictire."
+                    class="rounded-lg lg:h-40 md:w-40 h-36 w-36">
+            </div>
+        </div>
+
+        <!-- <div class="absolute hidden lg:block inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl"
+                aria-hidden="true">
+                <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#f0b0cb] opacity-50 sm:left-[calc(75%-30rem)] sm:w-[72.1875rem]"
+                    style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)">
+                </div>
+            </div> -->
+    </div>
+
+    <div class="relative mx-5 bg-white mt-10 pb-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 items-center justify-items-center gap-x-8 gap-y-8">
+            <% if (signupToday) { %>
+                <div class="bg-gray-50 border-spacing-x-11 border py-10 w-full px-5 hover:shadow-lg rounded-lg">
+                    <h2 class="text-xl font-medium tracking-tight text-gray-800 sm:text-2xl underline text-center">Next
+                        Duty Details
+                    </h2>
+                    <p class="font-medium text-gray-900 mt-5">Duty: <%= dutyDetailsData.dutyname %>
+                    </p>
+                    <p class="font-medium text-gray-900 mt-5">Start Date: <%= dutyDetailsData.startdate %>
+                    </p>
+                    <p class="font-medium text-gray-900 mt-5">End Date: <%= dutyDetailsData.enddate %>
+                    </p>
+                    <p class="font-medium text-gray-900 mt-5">Bus Type: <%= dutyDetailsData.bustype %>
+                    </p>
+                    <dl class="mt-5 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-16 lg:gap-x-8">
+                        <div class="border-t border-gray-200 pt-4">
+                            <form action="">
+                                <button type="submit" class="bg-blue-400 hover:opacity-85 rounded-md px-2 py-1">Apply
+                                    Leave</button>
+                            </form>
+                        </div>
+                    </dl>
+                </div>
+                <% } %>
+
+                    <% if (leave) { %>
+                        <div class="bg-gray-50 border-spacing-x-11 border py-10 w-full px-5 hover:shadow-lg rounded-lg">
+                            <h2
+                                class="text-xl font-medium tracking-tight text-gray-800 sm:text-2xl underline text-center">
+                                Next
+                                Duty Details
+                            </h2>
+                            <p class="font-medium text-gray-900 mt-5">Duty: <%= dutyDetailsData.dutyname %>
+                            </p>
+                            <p class="font-medium text-gray-900 mt-5">Start Date: <%= dutyDetailsData.startdate %>
+                            </p>
+                            <p class="font-medium text-gray-900 mt-5">End Date: <%= dutyDetailsData.enddate %>
+                            </p>
+                            <p class="font-medium text-gray-900 mt-5">Bus Type: <%= dutyDetailsData.bustype %>
+                            </p>
+                            <!-- <dl class="mt-5 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-16 lg:gap-x-8">
+                            <div class="border-t border-gray-200 pt-4">
+                                <form action="">
+                                    <button type="submit" class="bg-blue-400 hover:opacity-85 rounded-md px-2 py-1">Apply
+                                        Leave</button>
+                                </form>
+                            </div>
+                        </dl> -->
+                        </div>
+                        <% } else if(!leave && !leaveApplied && !signupToday) { %>
+                            <div
+                                class="bg-gray-50 border-spacing-x-11 border py-10 w-full px-5 hover:shadow-lg rounded-lg">
+                                <h2
+                                    class="text-xl font-medium tracking-tight text-gray-800 sm:text-2xl underline text-center">
+                                    Next Duty Details
+                                </h2>
+                                <p class="font-medium text-gray-900 mt-5">Duty: <%= dutyDetailsData.data.dutyname %>
+                                </p>
+                                <p class="font-medium text-gray-900 mt-5">Start Date: <%= dutyDetailsData.data.startdate
+                                        %> => <%= dutyDetailsData.data.starttime %>
+                                </p>
+                                <p class="font-medium text-gray-900 mt-5">End Date: <%= dutyDetailsData.data.enddate %>
+                                        => <%= dutyDetailsData.data.endtime %>
+                                </p>
+                                <p class="font-medium text-gray-900 mt-5">Bus Type: <%= dutyDetailsData.data.bustype %>
+                                </p>
+                                <p class="font-medium text-gray-900 mt-5">***Reach Depot atleast 20 mins before***</p>
+                            </div>
+                            <% } %>
+                                <div
+                                    class="bg-gray-50 border-spacing-x-11 border py-10 w-full px-5 hover:shadow-lg rounded-lg">
+                                    <h2
+                                        class="text-xl font-medium tracking-tight text-gray-800 sm:text-2xl underline text-center">
+                                        Previous Duty Details
+                                    </h2>
+                                    <p class="font-medium text-gray-900 mt-5">Duty: <%= previousDutyData.dutyname %>
+                                    </p>
+                                    <p class="font-medium text-gray-900 mt-5">Start Date: <%= previousDutyData.startdate
+                                            %>
+                                    </p>
+                                    <p class="font-medium text-gray-900 mt-5">End Date: <%= previousDutyData.enddate %>
+                                    </p>
+                                    <p class="font-medium text-gray-900 mt-5">Bus Type: <%= previousDutyData.bustype %>
+                                    </p>
+                                    <dl
+                                        class="mt-5 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-16 lg:gap-x-8">
+                                        <div class="border-t border-gray-200 pt-4">
+                                            <form action="">
+                                                <button type="submit"
+                                                    class="bg-blue-400 hover:opacity-85 rounded-md px-2 py-1">Apply
+                                                    Leave</button>
+                                            </form>
+                                        </div>
+                                    </dl>
+                                </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer'); -%>

@@ -1,0 +1,42 @@
+.container {
+    max-width: 750px;
+    /* Slightly increased width */
+    margin: 50px auto;
+    /* padding: 30px 40px; */
+    background-color: #ffffff;
+    border-radius: 10px;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  .form-control {
+    /* border: 2px solid #007bff; */
+    border-radius: 5px;
+    padding: 12px;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #0056b3;
+    box-shadow: none;
+  }
+
+  .forgot-password {
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+
+  .text-dark {
+    color: #999;
+  }

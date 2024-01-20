@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Navbar</title>
+    <!-- Tailwind CSS CDN -->
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="h-full bg-gray-50">
+
+    <nav
+        class="flex items-center justify-between flex-wrap p-4 bg-gradient-to-tr from-[#9b71e9] opacity-60 to-[#9b68fa]">
+        <div class="flex items-center flex-shrink-0 text-white mr-6">
+            <img src="/images/logo.png" class="h-16 hidden md:block rounded-full object-cover" alt="Brand Logo" />
+            <span
+                class="hidden sm:block md:font-semibold font-bold md:text-2xl tracking-tight ml-0 sm:ml-3 text-base">Andhra
+                Pradesh
+                State Road Transport
+                Corporation</span>
+            <span class="block sm:hidden md:font-semibold font-bold tracking-wider ml-0 sm:ml-3 text-2xl">APSRTC</span>
+        </div>
+        <div class="block lg:hidden">
+            <button id="menu-toggle"
+                class="flex items-center px-3 py-2 border rounded text-white border-white hover:text-white hover:border-white">
+                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <title>Menu</title>
+                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v15z" />
+                </svg>
+            </button>
+        </div>
+        <div id="menu" class="hidden w-full flex-grow lg:flex lg:items-center lg:w-auto">
+            <div class="text-lg lg:flex-grow lg:text-right">
+                <a href="/admin/<%= userPassingData.username %>/add-duty"
+                    class="block mt-4 lg:inline-block text-lg text-white hover:text-white mx-4">
+                    Add Duty
+                </a>
+                <a href="/admin/<%= userPassingData.username %>/add-user"
+                    class="block mt-4 lg:inline-block text-lg text-white hover:text-white mx-4">
+                    Add User
+                </a>
+                <!-- Dropdown Button -->
+                <div class="relative inline-block text-left mx-4 mt-4">
+                    <button id="dropdown-toggle"
+                        class="inline-flex justify-center w-full rounded-md border text-white border-gray-300 shadow-sm px-3 py-1 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                        aria-haspopup="true" aria-expanded="true">
+                        <%= userPassingData.username %>
+                            <!-- Heroicon name: chevron-down -->
+                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M10 12a2 2 0 001.414.586l3.536-3.536a1 1 0 00-1.414-1.414L10 10.586 6.464 7.636a1 1 0 00-1.414 1.414l3.536 3.536A2 2 0 0010 12z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="dropdown-menu"
+                        class="hidden origin-top-right text-white right-0 mt-2 w-20 rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                        <div class="py-1 absolute shadow-md" role="menu" aria-orientation="vertical"
+                            aria-labelledby="options-menu">
+                            <div class="bg-white -my-3 rounded-md object-cover">
+                                <a href="/admin/<%= userPassingData.username %>/dashboard"
+                                    class="block text-base px-5 mx-4 my-2 text-black rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white">Dashboard</a>
+                                <!-- <a href="#"
+                                    class="block py-2 px-5 mx-4 my-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Profile</a> -->
+                                <a href="/admin/<%= userPassingData.username %>/settings"
+                                    class="block text-base px-5 mx-4 my-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white">Settings</a>
+                                <form
+                                    class="block text-base px-5 mx-4 mb-3 rounded hover:bg-gray-100 md:hover:bg-transparent text-white md:p-0 dark:text-white"
+                                    action="/logout" method="POST">
+                                    <button type="submit"
+                                        class="bg-gray-800 px-2 py-1 rounded-md my-2 block">Logout</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </nav>
+
+
+    <div class="relative px-6 lg:px-5 my-20">
+        <% if (isSaved) { %>
+            <div class="container mx-auto text-center mt-5" id="alertbox">
+                <div class="container bg-blue-400 flex items-center text-white text-sm font-bold px-4 py-3 relative"
+                    role="alert">
+                    <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path
+                            d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z" />
+                    </svg>
+                    <p>User saved successfully</p>
+
+                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3 closealertbutton">
+                        <svg class="fill-current h-6 w-6 text-white" role="button" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20">
+                            <title>Close</title>
+                            <path
+                                d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <% } %>
+                <% if (isExist) { %>
+                    <div class="container mx-auto max-w-md mt-5" id="alertbox">
+                        <div class="container bg-blue-400 flex items-center text-white text-sm font-bold px-4 py-3 relative"
+                            role="alert">
+                            <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20">
+                                <path
+                                    d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z" />
+                            </svg>
+                            <p>User already Exists...</p>
+
+                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3 closealertbutton">
+                                <svg class="fill-current h-6 w-6 text-white" role="button"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <title>Close</title>
+                                    <path
+                                        d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                    <% } %>
+                        <% if (!hasAccess) { %>
+                            <div class="container mx-auto max-w-md mt-5" id="alertbox">
+                                <div class="container bg-blue-400 flex items-center text-white text-sm font-bold px-4 py-3 relative"
+                                    role="alert">
+                                    <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20">
+                                        <path
+                                            d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z" />
+                                    </svg>
+                                    <p>You don't have an access to add this user...</p>
+
+                                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3 closealertbutton">
+                                        <svg class="fill-current h-6 w-6 text-white" role="button"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <title>Close</title>
+                                            <path
+                                                d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <% } %>
+                                <main class="mx-auto">
+                                    <div class="flex min-h-full flex-col justify-center p-5 lg:px-8">
+                                        <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+                                            <img class="mx-auto h-20 w-auto md:hidden block rounded-full object-cover"
+                                                src="/images/logo.png" alt="Your Company">
+                                            <h2
+                                                class="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 mb-5">
+                                                Add New User</h2>
+                                        </div>
+
+                                        <div class="relative lg:px-5">
+                                            <main class="container mx-auto">
+                                                <form class="p-10 bg-gray-100 rounded-xl"
+                                                    action="/admin/<%= userPassingData.id %>/add-user" method="POST">
+                                                    <div class="grid gap-6 mb-6 md:grid-cols-2">
+                                                        <div>
+                                                            <label for="username"
+                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name:</label>
+                                                            <input type="text" id="username" name="username"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                        <div>
+                                                            <label for="id"
+                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User
+                                                                ID:</label>
+                                                            <input type="text" id="id" name="id"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label for="email"
+                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                                                            <input type="email" id="email" name="email"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                        <div>
+                                                            <label for="phone"
+                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Mobile:</label>
+                                                            <input type="text" id="phone" name="phone"
+                                                                class="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
+                                                                required>
+                                                        </div>
+                                                        <div>
+                                                            <label for="category"
+                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+                                                            <select id="category" name="category"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                                required>
+                                                                <option selected="">Select Role</option>
+                                                                <option value="admin">Admin</option>
+                                                                <option value="conductor">Conductor</option>
+                                                                <option value="driver">Driver</option>
+
+                                                            </select>
+                                                        </div>
+
+                                                        <div>
+                                                            <label for="district"
+                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">District</label>
+                                                            <select id="districtSelect" name="district"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                                required>
+                                                                <option value="">Select your District</option>
+                                                                <option value="Anantapur">Anantapur</option>
+                                                                <option value="Chittoor">Chittoor</option>
+                                                                <option value="East Godavari">East Godavari</option>
+                                                                <option value="Guntur">Guntur</option>
+                                                                <option value="Krishna">Krishna</option>
+                                                                <option value="Kurnool">Kurnool</option>
+                                                                <option value="Nellore">Nellore</option>
+                                                                <option value="Prakasam">Prakasam</option>
+                                                                <option value="Srikakulam">Srikakulam</option>
+                                                                <option value="Visakhapatnam">Visakhapatnam</option>
+                                                                <option value="Vizianagaram">Vizianagaram</option>
+                                                                <option value="West Godavari">West Godavari</option>
+                                                                <option value="YSR Kadapa">YSR Kadapa</option>
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <!-- Your second select option field for mandals -->
+                                                            <label for="depo"
+                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Depot:</label>
+                                                            <select id="depoSelect" name="depo"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                                required>
+                                                                <!-- Options will be dynamically populated based on the selected district -->
+                                                            </select>
+                                                        </div>
+
+                                                        <div>
+                                                            <label for="password"
+                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                                                            <input type="password" name="password" id="password"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-center">
+                                                        <button type="submit"
+                                                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+                                                    </div>
+                                                </form>
+                                            </main>
+                                        </div>
+
+                                    </div>
+                                </main>
+    </div>
+
+    <script>
+        // Function to close the alert box
+        function closeAlertBox() {
+            const alertBox = document.getElementById('alertbox');
+            if (alertBox) {
+                alertBox.style.display = 'none';
+            }
+        }
+
+        // Attach click event to the close button
+        const closeAlertButton = document.querySelector('.closealertbutton');
+        if (closeAlertButton) {
+            closeAlertButton.addEventListener('click', closeAlertBox);
+        }
+    </script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"
+        integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous">
+        </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <!-- Include jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/forSignup.js"></script>
+
+</body>
+
+</html>

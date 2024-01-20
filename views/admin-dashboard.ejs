@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Navbar</title>
+    <!-- Tailwind CSS CDN -->
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+</head>
+
+<body class="bg-gray-100">
+
+    <nav
+        class="flex items-center justify-between flex-wrap p-4 bg-gradient-to-tr from-[#9b71e9] opacity-60 to-[#9b68fa]">
+        <div class="flex items-center flex-shrink-0 text-white mr-6">
+            <img src="/images/logo.png" class="sm:h-16 sm:w-16 h-12 w-12 hidden sm:block rounded-full object-cover" alt="Brand Logo" />
+            <span
+                class="hidden sm:block md:font-semibold font-bold md:text-2xl tracking-tight ml-0 sm:ml-3 text-base">Andhra
+                Pradesh
+                State Road Transport
+                Corporation</span>
+            <span class="block sm:hidden md:font-semibold font-bold tracking-wider ml-0 sm:ml-3 text-2xl">APSRTC</span>
+        </div>
+        <div class="block lg:hidden">
+            <button id="menu-toggle"
+                class="flex items-center px-3 py-2 border rounded text-white border-white hover:text-white hover:border-white">
+                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <title>Menu</title>
+                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v15z" />
+                </svg>
+            </button>
+        </div>
+        <div id="menu" class="hidden w-full flex-grow lg:flex lg:items-center lg:w-auto">
+            <div class="text-lg lg:flex-grow lg:text-right">
+                <a href="/admin/<%= userPassingData.username %>/add-duty"
+                    class="block mt-4 lg:inline-block text-lg text-white hover:text-white mx-4">
+                    Add Duty
+                </a>
+                <a href="/admin/<%= userPassingData.username %>/add-user"
+                    class="block mt-4 lg:inline-block text-lg text-white hover:text-white mx-4">
+                    Add User
+                </a>
+                <div class="relative inline-block text-left mx-4 mt-4">
+                    <button id="dropdown-toggle"
+                        class="inline-flex justify-center w-full rounded-md border text-white border-gray-300 shadow-sm px-3 py-1 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                        aria-haspopup="true" aria-expanded="true">
+                        <%= userPassingData.username %>
+                            <!-- Heroicon name: chevron-down -->
+                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M10 12a2 2 0 001.414.586l3.536-3.536a1 1 0 00-1.414-1.414L10 10.586 6.464 7.636a1 1 0 00-1.414 1.414l3.536 3.536A2 2 0 0010 12z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="dropdown-menu"
+                        class="hidden origin-top-right text-white right-0 mt-2 w-20 rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                        <div class="py-1 absolute shadow-md" role="menu" aria-orientation="vertical"
+                            aria-labelledby="options-menu">
+                            <div class="bg-white -my-3 rounded-md object-cover">
+                                <a href="/admin/<%= userPassingData.username %>/dashboard"
+                                    class="block text-base px-5 mx-4 my-2 text-black rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white">Dashboard</a>
+                                <!-- <a href="#"
+                                        class="block py-2 px-5 mx-4 my-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Profile</a> -->
+                                <a href="/admin/<%= userPassingData.username %>/settings"
+                                    class="block text-base px-5 mx-4 my-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white">Settings</a>
+                                <form
+                                    class="block text-base px-5 mx-4 mb-3 rounded hover:bg-gray-100 md:hover:bg-transparent text-white md:p-0 dark:text-white"
+                                    action="/logout" method="POST">
+                                    <button type="submit"
+                                        class="bg-gray-800 px-2 py-1 rounded-md my-2 block">Logout</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </nav>
+
+    <!-- Main Content of the body -->
+    <div class="text-center my-10">
+        <span class="text-violet-700 px-3 mx-auto text-2xl">Employee Table</span>
+    </div>
+    <div class="relative px-6 lg:px-5">
+        <main class="md:mx-5 mx-auto">
+            <div class="overflow-hidden bg-white mt-10 mb-40">
+                <div class="px-6 py-6">
+                    <div class="relative overflow-x-auto shadow-lg sm:rounded-lg pb-5">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead
+                                class="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">
+                                        Employee Name
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        User ID
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Role
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Mobile
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (let i=0; i < getUsers.length; i++) { %>
+                                    <tr
+                                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <th scope="row"
+                                            class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <%= getUsers[i].username %>
+                                        </th>
+                                        <td class="px-6 py-3">
+                                            <%= getUsers[i].id %>
+                                        </td>
+                                        <td class="px-6 py-3">
+                                            <%= getUsers[i].category %>
+                                        </td>
+                                        <td class="px-6 py-3">
+                                            <%= getUsers[i].phone %>
+                                        </td>
+                                        <td class="flex flex-row px-6 py-3 space-x-10">
+                                            <a href="/<%= userPassingData.username %>/edit/<%= getUsers[i].id %>"
+                                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                            <a href="/delete/<%= getUsers[i].id %>"
+                                                class="font-medium text-red-900 hover:underline"
+                                                onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                            </tbody>
+                        </table>
+                        <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
+                            aria-label="Table navigation">
+                            <span
+                                class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto mx-5">Showing
+                                <span class="font-semibold text-gray-900 dark:text-white">1-10</span> of <span
+                                    class="font-semibold text-gray-900 dark:text-white">1000</span></span>
+                            <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8 mx-5">
+                                <li>
+                                    <a href="#"
+                                        class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
+                                </li>
+                                <li>
+                                    <a href="#" aria-current="page"
+                                        class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleButton = document.querySelector('[data-collapse-toggle="navbar-default"]');
+            const mobileMenu = document.getElementById('navbar-default');
+
+            toggleButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        });
+
+        // Function to close the alert box
+        function closeAlertBox() {
+            const alertBox = document.getElementById('alertbox');
+            if (alertBox) {
+                alertBox.style.display = 'none';
+            }
+        }
+
+        // Attach click event to the close button
+        const closeAlertButton = document.querySelector('.closealertbutton');
+        if (closeAlertButton) {
+            closeAlertButton.addEventListener('click', closeAlertBox);
+        }
+
+    </script>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <!-- Include jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/options.js"></script>
+    <!-- Include select2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+        integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</body>
+
+</html>

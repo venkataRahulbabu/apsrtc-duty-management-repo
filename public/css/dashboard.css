@@ -1,0 +1,97 @@
+/* Global styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f1f1f1;
+  }
+
+  .logo {
+    height: 65px;
+  }
+
+  .nav-item{
+    margin: 0px 5px;
+    font-size: 110%;
+  }
+
+  .userprofile{
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+  }
+
+  /* nav ul li a {
+    text-decoration: none;
+    color: #fff;
+  } */
+  
+  /* Main */
+  main {
+    max-width: 1175px;
+    margin: 10px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 5px;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  }
+  
+  .user-profile {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-info {
+    margin-left: 20px;
+  }
+  
+  .dashboard-content {
+    margin-top: 20px;
+  }
+  
+  .card {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .card h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  footer {
+    background-color: rgba(0, 0, 0, 0.638);
+    padding: 10px;
+    color: #fff;
+    text-align: center;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 600px) {
+    main {
+      padding: 10px;
+    }
+    
+    .user-profile {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .profile-info {
+      margin: 10px 0 0 0;
+    }
+    
+    .card {
+      font-size: 14px;
+    }
+  }
+
+  /* @media(max-width: 1150px){
+    .nav-item{
+      margin-left: 5px;
+      font-size: medium;
+    }
+  } */
+  
