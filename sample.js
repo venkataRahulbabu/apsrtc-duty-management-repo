@@ -4,23 +4,13 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
-// const { MongoClient } = require("mongodb");
 const MongoDBSession = require("connect-mongodb-session")(session);
 const nodemailer = require("nodemailer");
 const cookieParser = require("cookie-parser");
-const dotenv = require("dotenv");
+// const dotenv = require("dotenv");
 
 
 const app = express();
-
-// dotenv.config();
-
-// mongoose.connect(process.env.MONGO_URL).then(() => {
-//     console.log('Connected to MongoDB');
-// })
-//     .catch((err) => {
-//         console.log(err);
-//     });
 
 // Exported Models from models folder...
 const UserModel = require("./models/User");
@@ -38,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// const mongoURI = 'mongodb://localhost:27017/userDB'; 
+// const mongoURI = 'mongodb://localhost:27017/userDB';
 const mongoURI = 'mongodb://127.0.0.1:27017/userDB';
 
 mongoose.connect(mongoURI, {
@@ -49,8 +39,7 @@ mongoose.connect(mongoURI, {
         console.log("MongoDB Connected");
     });
 
-
-//   Creating session store...
+//  Creating session store...
 const store = new MongoDBSession({
     uri: mongoURI,
     collection: "mySessions",
@@ -60,7 +49,7 @@ const store = new MongoDBSession({
 app.use(
     session({
         secret: 'key that will assign cookie',
-        resave: true,
+        resave: false,
         saveUninitialized: true,
         cookie: {
             secure: false,
@@ -70,7 +59,14 @@ app.use(
         store: store
     })
 );
-
+// Session middleware...
+const isAuth = (req, res, next) => {
+    if (req.session.isAuth) {
+        next();
+    } else {
+        res.redirect("/");
+    }
+};
 
 // Retrieving the user details to show the details wherever there is need....
 var userDetails;
@@ -92,24 +88,6 @@ function todayDate() {
     return `${year}-${month}-${day}`;
 }
 
-function tomorrowDate() {
-    const currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + 1);
-    const year = currentDate.getFullYear();
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = currentDate.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-function dayAfterTomorrowDate() {
-    const currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + 2);
-    const year = currentDate.getFullYear();
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = currentDate.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
 function isDateBeforeToday(dateString) {
     const currentDate = new Date();
     const givenDate = new Date(dateString);
@@ -117,7 +95,6 @@ function isDateBeforeToday(dateString) {
 }
 
 // Email Transporter
-
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -176,27 +153,21 @@ function randomDuty(array) {
     return array[randomIndex];
 }
 
-// Session middleware...
-const isAuth = (req, res, next) => {
-    if (req.session.isAuth) {
-        next();
-    } else {
-        res.redirect("/");
-    }
-};
-
 // GET Request Routes here...
+
+/* Admin related routes */
 app.get("/", function (req, res) {
-    res.render("home", { boolFlag: true, userFlag: false, passwordFlag: false });
+    return res.render("home", { boolFlag: true, userFlag: false, passwordFlag: false });
 });
 
 app.get("/signup", function (req, res) {
-    res.render("signup", { isExist: false });
+    return res.render("signup", { isExist: false });
 });
 
 app.post("/signup", async function (req, res) {
     const { username, id, email, category, district, depo, phone, password } = req.body;
-    const findById = await UserModel.findOne({ id });
+    const lowerCaseId = id.toLowerCase();
+    const findById = await UserModel.findOne({ id: lowerCaseId });
     const findByEmail = await UserModel.findOne({ email });
     if ((findByEmail || findById) || (findByEmail && findById)) {
         return res.render("signup", { isExist: true });
@@ -204,7 +175,7 @@ app.post("/signup", async function (req, res) {
     const hashPass = await bcrypt.hash(password, 12);
     user = new UserModel({
         username,
-        id,
+        id: lowerCaseId,
         email,
         category,
         district,
@@ -213,12 +184,13 @@ app.post("/signup", async function (req, res) {
         password: hashPass,
         createddate: todayDate()
     });
-    await user.save();
     if (user.category === "admin") {
+        await user.save();
         req.session.isAuth = true;
         req.session.userData = user;
         return res.redirect(`/admin/${user.username}/dashboard`);
     }
+    await user.save();
     userDetails = user;
     req.session.userData = userDetails;
     req.session.dutyData = {
@@ -235,7 +207,8 @@ app.post("/signup", async function (req, res) {
 
 app.post("/login", async function (req, res) {
     const { id, password } = req.body;
-    const finduser = await UserModel.findOne({ id });
+    const lowerCaseId = id.toLowerCase();
+    const finduser = await UserModel.findOne({ id: lowerCaseId });
     if (!finduser) {
         return res.render("home", { userFlag: true, boolFlag: true, passwordFlag: false });
     }
@@ -248,33 +221,27 @@ app.post("/login", async function (req, res) {
         req.session.userData = finduser;
         return res.redirect(`/admin/${finduser.username}/dashboard`);
     }
-    if (finduser.createddate === todayDate() && isMatch) {
+    if (finduser.createddate === todayDate()) {
         userDetails = finduser;
         req.session.userData = userDetails;
         req.session.dutyData = {
             dutyname: "Not Available", startdate: "Not Available", enddate: "Not Availale",
             starttime: "Not Available", endtime: "Not Available", bustype: "Not Available"
         };
-        req.session.previousDuty = {
-            dutyname: "Not Available", startdate: "Not Available", enddate: "Not Availale",
-            starttime: "Not Available", endtime: "Not Available", bustype: "Not Available"
-        };
+        req.session.previousDuty = req.session.dutyData;
         req.session.isAuth = true;
         return res.redirect(`/${userDetails.username}/index`);
     }
-    dutyDetails = await DutyModel.find({ district: finduser.district });
+    dutyDetails = await DutyModel.find({ district: finduser.district, depo: finduser.depo });
 
-    if (finduser.createddate !== todayDate() && isMatch) {
+    if (finduser.createddate !== todayDate()) {
         const now = Date.now();
         userDetails = finduser;
-        console.log(userDetails);
         const findTimeStamp = await loginHistory.findOne({ id: userDetails.id });
         var findPreviousDuty = await previousDutyModel.findOne({ id: userDetails.id });
         const findLeavedUser = await LeaveModel.findOne({ id: userDetails.id });
-
         // No timestamp and No previous duty before..
         if (!findTimeStamp && !findPreviousDuty) {
-
             // Applied for leave, not done any duty yet...
             if (findLeavedUser && (findLeavedUser.from === todayDate() || findLeavedUser.to === todayDate())) {
                 console.log("User is in Leave");
@@ -313,7 +280,6 @@ app.post("/login", async function (req, res) {
                 });
                 await logHistory.save();
                 await DutyModel.deleteOne({ dutyname: randomDutyDetails.dutyname });
-
                 req.session.loginTimestamp = now;
                 req.session.userData = userDetails;
                 req.session.dutyData = randomDutyDetails;
@@ -403,31 +369,59 @@ app.get("/admin/:username/dashboard", isAuth, async function (req, res) {
     userPassingData = req.session.userData;
     const { username } = req.params;
     const targetRoles = ['conductor', 'driver'];
-    const getUser = await UserModel.findOne({ username: username });
+    const getUser = await UserModel.findOne({ username: username, id: userPassingData.id });
     const getUsers = await UserModel.find({ depo: getUser.depo, category: { $in: targetRoles } });
-    res.render("admin-dashboard", { userPassingData, getUsers });
+    return res.render("admin-dashboard", { userPassingData, getUsers });
+});
+
+app.get("/delete/:id", isAuth, async function (req, res) {
+    const { id } = req.params;
+    const currentUser = await UserModel.findOne({ id });
+    await UserModel.deleteOne({ id });
+    const getAdmin = await UserModel.findOne({ category: "admin", depo: currentUser.depo });
+    return res.redirect(`/admin/${getAdmin.username}/dashboard`);
+});
+
+app.get("/:username/edit/:id", isAuth, async function (req, res) {
+    userPassingData = req.session.userData;
+    const { username, id } = req.params;
+    return res.redirect(`/admin/${username}/edit/${id}`);
+});
+
+app.get("/admin/:username/edit/:id", isAuth, async function (req, res) {
+    userPassingData = req.session.userData;
+    const { id } = req.params;
+    const currentUser = await UserModel.findOne({ id });
+    console.log(currentUser);
+    return res.render("editUser", { userPassingData, currentUser, isSaved: false, phone: false });
+});
+
+app.post("/admin/:username/edit/:id", isAuth, async function (req, res) {
+    userPassingData = req.session.userData;
+    const { id } = req.params;
+    const currentUser = await UserModel.findOne({ id });
+    const findAdmin = await UserModel.findOne({ category: "admin", depo: currentUser.depo });
+    const { username, email, phone } = req.body;
+    if (phone.length == 10) {
+        await UserModel.updateOne({ id }, { $set: { username, email, phone } });
+        return res.redirect(`/admin/${findAdmin.username}/edit/${currentUser.id}`);
+    }
+    return res.render("editUser", { userPassingData, currentUser, isSaved: false, phone: true });
 });
 
 app.get("/admin/:username/add-duty", isAuth, async function (req, res) {
     userPassingData = req.session.userData;
-    res.render("addDuty", { userPassingData, alreadySaved: false, initialStatus: false, hasAccess: true });
+    return res.render("addDuty", { userPassingData, alreadySaved: false, initialStatus: false, hasAccess: true });
 });
 
-app.post("/admin/:id/add-duty", isAuth, async function (req, res) {
+app.post("/admin/:username/add-duty", isAuth, async function (req, res) {
     userPassingData = req.session.userData;
-    const adminId = req.params.id;
-    const getUser = await UserModel.findOne({ id: adminId });
+    const username = req.params.username;
+    const getUser = await UserModel.findOne({ username: username, id: userPassingData.id });
     console.log(getUser);
     const { district, depo, dutyname, startdate, enddate, starttime, endtime, bustype } = req.body;
     duty = new DutyModel({
-        district,
-        depo,
-        dutyname,
-        startdate,
-        enddate,
-        starttime,
-        endtime,
-        bustype
+        district, depo, dutyname, startdate, enddate, starttime, endtime, bustype
     });
     const dutySearch = await DutyModel.findOne({ depo: duty.depo, dutyname: duty.dutyname, startdate: duty.startdate, enddate: duty.enddate, starttime: duty.starttime, endtime: duty.endtime });
     if (!dutySearch && getUser.depo === duty.depo) {  /* no duty in duties table, same depo */
@@ -442,20 +436,21 @@ app.post("/admin/:id/add-duty", isAuth, async function (req, res) {
 
 app.get("/admin/:username/add-user", isAuth, async function (req, res) {
     userPassingData = req.session.userData;
-    res.render("addUser", { userPassingData, isSaved: false, isExist: false, hasAccess: true });
+    return res.render("addUser", { userPassingData, isSaved: false, isExist: false, hasAccess: true });
 });
 
-app.post("/admin/:id/add-user", isAuth, async function (req, res) {
+app.post("/admin/:username/add-user", isAuth, async function (req, res) {
     userPassingData = req.session.userData;
-    const adminId = req.params.id;
-    const getAdmin = await UserModel.findOne({ id: adminId });
-    console.log(getAdmin);
+    const name = req.params.username;
+    const getAdmin = await UserModel.findOne({ username: name, id: userPassingData.id });
     const { username, id, email, phone, category, district, depo, password } = req.body;
     const hashPass = await bcrypt.hash(password, 12);
+    const lowerCaseId = id.toLowerCase();
     user = new UserModel({
-        username, id, email, phone, category, district, depo, password: hashPass, createddate: todayDate()
+        username, id: lowerCaseId, email, phone, category, district, depo, password: hashPass, createddate: todayDate()
     });
-    const findUser = await UserModel.findOne({ id });
+    const findUser = await UserModel.findOne({ id: lowerCaseId });
+    console.log(findUser);
     if (!findUser && user.depo === getAdmin.depo) {
         await user.save();
         return res.render("addUser", { isSaved: true, isExist: false, hasAccess: true, userPassingData });
@@ -464,120 +459,42 @@ app.post("/admin/:id/add-user", isAuth, async function (req, res) {
     }
 });
 
-app.get("/delete/:id", isAuth, async function (req, res) {
-    const { id } = req.params;
-    const currentUser = await UserModel.findOne({ id });
-    await UserModel.deleteOne({ id });
-    const getAdmin = await UserModel.findOne({ category: "admin", depo: currentUser.depo });
-    return res.redirect(`/admin/${getAdmin.username}/dashboard`);
-});
-
-app.get("/:username/edit/:id", isAuth, async function (req, res) {
+app.get("/admin/:username/dashboard/find-user", isAuth, async function (req, res) {
     userPassingData = req.session.userData;
-    const { username, id } = req.params;
-    res.redirect(`/admin/${username}/edit/${id}`);
-});
-
-app.get("/admin/:username/edit/:id", isAuth, async function (req, res) {
-    userPassingData = req.session.userData;
-    const { id } = req.params;
-    const currentUser = await UserModel.findOne({ id });
-    res.render("editUser", { userPassingData, currentUser, isSaved: false, phone: false });
-});
-
-app.post("/admin/:username/edit/:id", isAuth, async function (req, res) {
-    userPassingData = req.session.userData;
-    const { admin, id } = req.params;
-    const currentUser = await UserModel.findOne({ id });
-    console.log(currentUser);
-    const findAdmin = await UserModel.findOne({ category: "admin", depo: currentUser.depo });
-    const username = req.body.username;
-    const email = req.body.email;
-    const phone = req.body.phone;
-    if (phone.length == 10) {
-        await UserModel.updateOne({ id }, { $set: { username: username, email: email, phone: phone } });
-        // return res.render("editUser", { userPassingData, currentUser, isSaved: true, phone: false });
-        return res.redirect(`/admin/${findAdmin.username}/edit/${currentUser.id}`);
-    }
-    return res.render("editUser", { userPassingData, currentUser, isSaved: false, phone: true });
-});
-
-app.get("/:username/leaveform", isAuth, async function (req, res) {
-    userPassingData = req.session.userData;
-    return res.render("leaveform", { userPassingData, value: true, isAppliedAlready: false });
-})
-
-app.get("/forgot-password", function (req, res) {
-    res.render("forgotPassword");
-});
-
-app.get("/validate-otp", function (req, res) {
-    res.render("validateOTP", { ans: false });
-});
-
-app.get("/create-password", function (req, res) {
-    res.render("createPassword", { isSame: false });
-});
-
-app.get("/:username/index", isAuth, async function (req, res) {
-    userPassingData = req.session.userData;
-    const signupToday = await UserModel.findOne({ id: userPassingData.id, createddate: todayDate });
-    if (signupToday) {
-        dutyDetailsData = req.session.dutyData;
-    } else {
-        dutyDetailsData = req.session.dutyData;
-    }
-    res.render("index", { userPassingData, dutyDetailsData });
-});
-
-
-/* app.get("/about-us", isAuth, function (req, res) {
-    userPassingData = req.session.userData;
-    dutyDetailsData = req.session.dutyData;
-    res.render("aboutus", { userPassingData, dutyDetailsData });
-}); */
-
-/* app.get("/faqs", isAuth, function (req, res) {
-    userPassingData = req.session.userData;
-    dutyDetailsData = req.session.dutyData;
-    res.render("faq", { userPassingData, dutyDetailsData });
-}); */
-
-app.get("/:username/departments", isAuth, async function (req, res) {
-    userPassingData = req.session.userData;
-    dutyDetailsData = req.session.dutyData;
-    res.render("departments", { userPassingData, dutyDetailsData });
-});
-
-app.get("/:username/settings", isAuth, async function (req, res) {
-    const { username } = req.params;
-    const getUser = await UserModel.findOne({ username, category: "admin" });
-    if (getUser) {
-        req.session.userData = getUser;
-        res.redirect(`/admin/${getUser.username}/settings`);
-    }
-    userPassingData = req.session.userData;
-    dutyDetailsData = req.session.dutyData;
-    res.render("settings", { userPassingData, dutyDetailsData, isMatching: true, newAndConfirm: true });
+    const searchItem = req.query.search;
+    const searchResults = await UserModel.find({
+        $and: [
+            {
+                $or: [
+                    { username: { $regex: searchItem, $options: 'i' } },
+                    { id: { $regex: searchItem, $options: 'i' } },
+                    { email: { $regex: searchItem, $options: 'i' } },
+                    { category: { $regex: searchItem, $options: 'i' } },
+                    { phone: { $regex: searchItem, $options: 'i' } }
+                ]
+            },
+            { category: { $ne: "admin" } }
+        ]
+    });
+    return res.render('searchResults', { userPassingData, results: searchResults, searchItem });
 });
 
 app.get("/admin/:username/settings", isAuth, async function (req, res) {
     userPassingData = req.session.userData;
-    res.render("adminSettings", { userPassingData, isMatching: true, newAndConfirm: true });
+    return res.render("adminSettings", { userPassingData, isMatching: true, newAndConfirm: true });
 });
 
 app.post("/admin/:username/settings", isAuth, async function (req, res) {
+    userPassingData = req.session.userData;
     const { currentpass } = req.body;
-    const { name } = req.params;
     const newpass = req.body.newpass;
     const confirmpass = req.body.confirmpass;
-    userPassingData = req.session.userData;
     if (newpass !== confirmpass) {
         return res.render("adminSettings", { newAndConfirm: false, isMatching: true, userPassingData });
     }
     const newPassword = await bcrypt.hash(confirmpass, 12);
     const isMatched = await bcrypt.compare(currentpass, userPassingData.password);
-    const settingUser = await UserModel.findOne({ password: req.session.userData.password });
+    const settingUser = await UserModel.findOne({ password: req.session.userData.password, id: userPassingData.id });
     if (!isMatched) {
         return res.render("adminSettings", { newAndConfirm: true, isMatching: false, userPassingData });
     }
@@ -587,8 +504,41 @@ app.post("/admin/:username/settings", isAuth, async function (req, res) {
         console.log("Password Saved...");
         return res.redirect(`/admin/${settingUser.username}/dashboard`);
     }
+});
 
-})
+/* Normal user related routes... */
+
+app.get("/forgot-password", function (req, res) {
+    return res.render("forgotPassword");
+});
+
+app.get("/validate-otp", function (req, res) {
+    return res.render("validateOTP", { ans: false });
+});
+
+app.get("/create-password", function (req, res) {
+    return res.render("createPassword", { isSame: false });
+});
+
+app.get("/:username/index", isAuth, async function (req, res) {
+    userPassingData = req.session.userData;
+    return res.render("index", { userPassingData });
+});
+
+app.get("/:username/departments", isAuth, async function (req, res) {
+    userPassingData = req.session.userData;
+    return res.render("departments", { userPassingData });
+});
+
+app.get("/:username/settings", isAuth, async function (req, res) {
+    userPassingData = req.session.userData;
+    return res.render("settings", { userPassingData, isMatching: true, newAndConfirm: true });
+});
+
+app.get("/:username/leaveform", isAuth, async function (req, res) {
+    userPassingData = req.session.userData;
+    return res.render("leaveform", { userPassingData, value: true, isAppliedAlready: false });
+});
 
 // User logout route
 app.post("/logout", isAuth, function (req, res) {
@@ -599,11 +549,8 @@ app.post("/logout", isAuth, function (req, res) {
 });
 
 
-// POST Requests here...
-
 app.get("/:username/dashboard", isAuth, async function (req, res) {
     userPassingData = req.session.userData;
-    console.log(userPassingData);
     const findingUser = await UserModel.findOne({ id: userPassingData.id, createddate: todayDate() });
     const searchUser = await LeaveModel.findOne({ id: userPassingData.id });
     const searchTimeStamp = await loginHistory.findOne({ id: userPassingData.id });
@@ -613,21 +560,42 @@ app.get("/:username/dashboard", isAuth, async function (req, res) {
         previousDutyData = req.session.previousDuty;
         return res.render("dashboard", { userPassingData, dutyDetailsData, previousDutyData, signupToday: true, leave: false, leaveApplied: false });
     }
-
-    // // created today and leave applied for tomorrow and day after tomorrow...
-    // if (findingUser && searchUser.from===tomorrowDate() && searchUser.to===dayAfterTomorrowDate()){
-    //     console.log("This is created today and leave applied for tomorrow and next day...");
-    //     dutyDetailsData = req.session.dutyData;
-    //     previousDutyData=req.session.previousDuty;
-    //     return res.render("dashboard", { userPassingData, dutyDetailsData, previousDutyData,signupToday: true, leave: false, leaveApplied: true });
-    // }
-
+    /* created today and leave applied for tomorrow and day after tomorrow...
+    if (findingUser && searchUser.from===tomorrowDate() && searchUser.to===dayAfterTomorrowDate()){
+        console.log("This is created today and leave applied for tomorrow and next day...");
+        dutyDetailsData = req.session.dutyData;
+        previousDutyData=req.session.previousDuty;
+        return res.render("dashboard", { userPassingData, dutyDetailsData, previousDutyData,signupToday: true, leave: false, leaveApplied: true });
+    }
+    */
     // Simulating the timestamp retrieved from the database as a string
     const timestampFromDatabase = searchTimeStamp.timestamp;
     const now = Date.now();
     const timeDifference = now - timestampFromDatabase;
 
-    if (!findingUser && searchUser.from === todayDate() || (!findingUser && searchUser.to === todayDate())) {
+    //  Not created today and not applied leave for tomorrow and day after tomorrow...
+    if (!findingUser && (!searchUser || searchUser.from !== todayDate()) && timeDifference <= 2 * 24 * 60 * 60 * 1000) {
+        console.log("This is first one...");
+        dutyDetailsData = await loginHistory.findOne({ id: userPassingData.id });
+        previousDutyData = await previousDutyModel.findOne({ id: userPassingData.id });
+        if (!previousDutyData) {
+            previousDutyData = {
+                dutyname: "Not Available", startdate: "Not Available", enddate: "Not Availale",
+                starttime: "Not Available", endtime: "Not Available", bustype: "Not Available"
+            }
+        }
+        return res.render("dashboard", { userPassingData, dutyDetailsData, previousDutyData, signupToday: false, leave: false, leaveApplied: false });
+    }
+    // Not created today and not in leave today OR Not created today and leave.length=0
+    else if ((!findingUser && searchUser.from !== todayDate() || !findingUser && searchUser.length === 0) && timeDifference <= 2 * 24 * 60 * 60 * 1000) {
+        dutyDetailsData = await loginHistory.findOne({ id: userPassingData.id });
+        console.log("This is second one...");
+        previousDutyData = await previousDutyModel.findOne({ id: userPassingData.id });
+        // console.log(dutyDetailsData);
+        return res.render("dashboard", { userPassingData, dutyDetailsData, previousDutyData, signupToday: false, leave: false, leaveApplied: false });
+    }
+
+    else if (!findingUser && searchUser.from === todayDate() || (!findingUser && searchUser.to === todayDate())) {
         dutyDetailsData = {
             dutyname: "Not Available", startdate: "Not Available", enddate: "Not Availale",
             starttime: "Not Available", endtime: "Not Available", bustype: "Not Available"
@@ -642,53 +610,23 @@ app.get("/:username/dashboard", isAuth, async function (req, res) {
         return res.render("dashboard", { userPassingData, dutyDetailsData, previousDutyData, signupToday: false, leave: true, leaveApplied: false });
     }
 
-    //  Not created today and not applied leave for tomorrow and day after tomorrow...
-    else if (!findingUser && (!searchUser || searchUser.from !== todayDate()) && timeDifference <= 2 * 24 * 60 * 60 * 1000) {
-        console.log("This is first one...");
-        dutyDetailsData = await loginHistory.findOne({ id: userPassingData.id });
-        // console.log(dutyDetailsData);
-        previousDutyData = await previousDutyModel.findOne({ id: userPassingData.id });
-        if (!previousDutyData) {
-            previousDutyData = {
-                dutyname: "Not Available", startdate: "Not Available", enddate: "Not Availale",
-                starttime: "Not Available", endtime: "Not Available", bustype: "Not Available"
-            }
-        }
-        return res.render("dashboard", { userPassingData, dutyDetailsData, previousDutyData, signupToday: false, leave: false, leaveApplied: false });
-    }
-
-    // Not created today and not in leave today OR Not created today and leave.length=0
-    else if ((!findingUser && searchUser.from !== todayDate() || !findingUser && searchUser.length === 0) && timeDifference <= 2 * 24 * 60 * 60 * 1000) {
-        dutyDetailsData = await loginHistory.findOne({ id: userPassingData.id });
-        console.log("This is second one...");
-        previousDutyData = await previousDutyModel.findOne({ id: userPassingData.id });
-        // console.log(dutyDetailsData);
-        return res.render("dashboard", { userPassingData, dutyDetailsData, previousDutyData, signupToday: false, leave: false, leaveApplied: false });
-    }
-
 });
 
-
 app.post("/:username/leaveform", isAuth, async function (req, res) {
-    const { name } = req.params;
-    console.log({ name });
-    // const targetRoles = ['conductor', 'driver'];
-    const getUser = await UserModel.find({ username: name });
-    console.log(getUser);
-    const username = req.body.username;
-    const id = req.body.id; const email = req.body.email;
-    const from = req.body.from; const to = req.body.to;
-    const problem = req.body.problem;
-    const findUserId = UserModel.findOne({ id: id });
-    const findUserMail = UserModel.findOne({ email: email });
-    const checkLeaveTable = await LeaveModel.findOne({ id: id, email: email });
-    if (!findUserId || !findUserMail || !(findUserMail && findUserId)) {
+    userPassingData = req.session.userData;
+    const { user } = req.params;
+    const getUser = await UserModel.find({ username: user, id: userPassingData.id });
+    const { username, id, email, problem, from, to } = req.body;
+    const lowerCaseId = id.toLowerCase();
+    const findUserId = UserModel.findOne({ id: lowerCaseId, email: email });
+    const checkLeaveTable = await LeaveModel.findOne({ id: lowerCaseId, email: email });
+    if (!findUserId) {
         console.log("This is the case...");
         return res.redirect(`/${getUser.username}/leaveform`);
     }
     leave = new LeaveModel({
         username,
-        id,
+        id: lowerCaseId,
         email,
         from,
         to,

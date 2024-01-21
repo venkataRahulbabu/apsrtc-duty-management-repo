@@ -1,92 +1,6 @@
-<!DOCTYPE html>
-<html class="h-full">
+<%- include('partials/adminHeader'); -%>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Navbar</title>
-    <!-- Tailwind CSS CDN -->
-    <link rel="stylesheet" href="output.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-</head>
-
-<body class="h-full bg-gray-50">
-
-    <nav
-        class="flex items-center justify-between flex-wrap p-4 bg-gradient-to-tr from-[#9b71e9] opacity-60 to-[#9b68fa]">
-        <div class="flex items-center flex-shrink-0 text-white mr-6">
-            <img src="/images/logo.png" class="h-16 hidden md:block rounded-full object-cover" alt="Brand Logo" />
-            <span
-                class="hidden sm:block md:font-semibold font-bold md:text-2xl tracking-tight ml-0 sm:ml-3 text-base">Andhra
-                Pradesh
-                State Road Transport
-                Corporation</span>
-            <span class="block sm:hidden md:font-semibold font-bold tracking-wider ml-0 sm:ml-3 text-2xl">APSRTC</span>
-        </div>
-        <div class="block lg:hidden">
-            <button id="menu-toggle"
-                class="flex items-center px-3 py-2 border rounded text-white border-white hover:text-white hover:border-white">
-                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <title>Menu</title>
-                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v15z" />
-                </svg>
-            </button>
-        </div>
-        <div id="menu" class="hidden w-full flex-grow lg:flex lg:items-center lg:w-auto">
-            <div class="text-lg lg:flex-grow lg:text-right">
-                <a href="/admin/<%= userPassingData.username %>/add-duty"
-                    class="block mt-4 lg:inline-block text-lg text-white hover:text-white mx-4">
-                    Add Duty
-                </a>
-                <a href="/admin/<%= userPassingData.username %>/add-user"
-                    class="block mt-4 lg:inline-block text-lg text-white hover:text-white mx-4">
-                    Add User
-                </a>
-                <!-- Dropdown Button -->
-                <div class="relative inline-block text-left mx-4">
-                    <button id="dropdown-toggle"
-                        class="inline-flex justify-center w-full rounded-md border text-white border-gray-300 shadow-sm px-3 py-1 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
-                        aria-haspopup="true" aria-expanded="true">
-                        <%= userPassingData.username %>
-                            <!-- Heroicon name: chevron-down -->
-                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M10 12a2 2 0 001.414.586l3.536-3.536a1 1 0 00-1.414-1.414L10 10.586 6.464 7.636a1 1 0 00-1.414 1.414l3.536 3.536A2 2 0 0010 12z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                    </button>
-                    <!-- Dropdown Menu -->
-                    <div id="dropdown-menu"
-                        class="hidden origin-top-right text-white right-0 mt-2 w-20 rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
-                        <div class="py-1 absolute shadow-md" role="menu" aria-orientation="vertical"
-                            aria-labelledby="options-menu">
-                            <div class="bg-white -my-3 rounded-md object-cover">
-                                <a href="/admin/<%= userPassingData.username %>/dashboard"
-                                    class="block text-base px-5 mx-4 my-2 text-black rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white">Dashboard</a>
-                                <!-- <a href="#"
-                                        class="block py-2 px-5 mx-4 my-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Profile</a> -->
-                                <a href="/admin/<%= userPassingData.username %>/settings"
-                                    class="block text-base px-5 mx-4 my-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white">Settings</a>
-                                <form
-                                    class="block text-base px-5 mx-4 mb-3 rounded hover:bg-gray-100 md:hover:bg-transparent text-white md:p-0 dark:text-white"
-                                    action="/logout" method="POST">
-                                    <button type="submit"
-                                        class="bg-gray-800 px-2 py-1 rounded-md my-2 block">Logout</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </nav>
-
-
-    <div class="relative px-6 lg:px-5 my-20">
+    <div class="relative px-6 lg:px-5 sm:my-5 md:my-20">
         <% if (alreadySaved) { %>
             <div class="container mx-auto max-w-md mt-5" id="alertbox">
                 <div class="container bg-blue-400 flex items-center text-white text-sm font-bold px-4 py-3 relative"
@@ -155,10 +69,10 @@
                                 <main class="mx-auto">
                                     <div class="flex min-h-full flex-col justify-center p-5 lg:px-8">
                                         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-                                            <img class="mx-auto h-20 w-auto md:hidden block" src="/images/logo.png"
+                                            <img class="mx-auto h-20 w-auto md:hidden block rounded-full object-cover mb-5" src="/images/logo.png"
                                                 alt="Your Company">
                                             <h2
-                                                class="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 mb-5">
+                                                class="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 md:mb-5 mb-2">
                                                 Add New Duty
                                             </h2>
                                         </div>
@@ -166,7 +80,7 @@
                                         <div class="relative px-6 lg:px-5">
                                             <main class="container mx-auto">
                                                 <form class="p-10 bg-gray-100 rounded-xl"
-                                                    action="/admin/<%= userPassingData.id %>/add-duty" method="POST">
+                                                    action="/admin/<%= userPassingData.username %>/add-duty" method="POST">
                                                     <div class="grid gap-6 mb-6 md:grid-cols-2">
                                                         <div class="mx-5">
                                                             <label for="districtSelect"
@@ -327,31 +241,6 @@
 
 
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const toggleButton = document.querySelector('[data-collapse-toggle="navbar-default"]');
-            const mobileMenu = document.getElementById('navbar-default');
-
-            toggleButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        });
-
-        // Function to close the alert box
-        function closeAlertBox() {
-            const alertBox = document.getElementById('alertbox');
-            if (alertBox) {
-                alertBox.style.display = 'none';
-            }
-        }
-
-        // Attach click event to the close button
-        const closeAlertButton = document.querySelector('.closealertbutton');
-        if (closeAlertButton) {
-            closeAlertButton.addEventListener('click', closeAlertBox);
-        }
-
-    </script>
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
