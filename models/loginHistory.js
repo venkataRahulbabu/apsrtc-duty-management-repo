@@ -1,7 +1,7 @@
-const mongoose=require("mongoose");
+import mongoose from "mongoose";
 const Schema=mongoose.Schema;
 
-loginSchema=new Schema({
+const loginSchema=new Schema({
     id:{
         type:String,
         required:true,
@@ -16,4 +16,6 @@ loginSchema=new Schema({
     }
 });
 
-module.exports=mongoose.model("Login History",loginSchema);
+// module.exports=mongoose.model("Login History",loginSchema);
+const loginHistory=mongoose.model("Login History",loginSchema);
+export default loginHistory;

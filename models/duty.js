@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const Schema=mongoose.Schema;
 
@@ -37,4 +37,5 @@ const dutySchema=new Schema({
     }
 });
 
-module.exports=mongoose.model("Duty Detail",dutySchema);
+const duty=mongoose.model("Duty Detail",dutySchema);
+export default duty;

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const Schema=mongoose.Schema;
 
@@ -29,4 +29,5 @@ const leaveSchema= new Schema({
     }
 });
 
-module.exports=mongoose.model("Leave",leaveSchema);
+const Leave=mongoose.model("leave",leaveSchema);
+export default Leave;

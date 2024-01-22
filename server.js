@@ -1,23 +1,31 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const bcrypt = require("bcryptjs");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const session = require("express-session");
-const MongoDBSession = require("connect-mongodb-session")(session);
-const nodemailer = require("nodemailer");
-const cookieParser = require("cookie-parser");
-// const dotenv = require("dotenv");
+import express from 'express';
+import bodyParser from "body-parser";
+import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
+import cors from "cors"
+import session from "express-session"
+import MongoDBSession from 'connect-mongodb-session';
+import nodemailer from "nodemailer";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 
+dotenv.config();
+mongoose.connect(process.env.MONGO_URL).then(() => {    
+    console.log('Connected to MongoDB');
+})
+    .catch((err) => {
+        console.log(err);
+    });
 
 const app = express();
+const MongoDBStore = MongoDBSession(session);
 
 // Exported Models from models folder...
-const UserModel = require("./models/User");
-const DutyModel = require("./models/duty");
-const LeaveModel = require("./models/Leave");
-const previousDutyModel = require("./models/previousDuty");
-const loginHistory = require("./models/loginHistory");
+import UserModel from "./models/User.js";
+import DutyModel from "./models/duty.js"
+import LeaveModel from './models/Leave.js'
+import previousDutyModel from './models/previousDuty.js'
+import loginHistory from './models/loginHistory.js'
 
 
 // Middlewares//
@@ -29,7 +37,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // const mongoURI = 'mongodb://localhost:27017/userDB';
-const mongoURI = 'mongodb://127.0.0.1:27017/userDB';
+/* const mongoURI = 'mongodb://127.0.0.1:27017/userDB';
 
 mongoose.connect(mongoURI, {
     useNewUrlParser: true,
@@ -37,11 +45,11 @@ mongoose.connect(mongoURI, {
 })
     .then((res) => {
         console.log("MongoDB Connected");
-    });
+    }); */
 
 //  Creating session store...
-const store = new MongoDBSession({
-    uri: mongoURI,
+const store = new MongoDBStore({
+    uri: process.env.MONGO_URL,
     collection: "mySessions",
 });
 
@@ -101,8 +109,8 @@ const transporter = nodemailer.createTransport({
     secure: false,
     // service: 'gmail',
     auth: {
-        user: 'projectmailid7@gmail.com',
-        pass: 'fpef gytz nvhe inei',
+        user: process.env.SOURCE_MAIL,
+        pass: process.env.PASS_KEY,
     },
 });
 
@@ -119,7 +127,7 @@ function generateOTP() {
 async function sendOTP(email, otp) {
     try {
         const mailOptions = {
-            from: 'projectmailid7@gmail.com',
+            from: process.env.SOURCE_MAIL,
             to: email,
             subject: 'Forgot Password OTP',
             text: 'Your OTP for password reset is: ' + otp,
@@ -135,7 +143,7 @@ async function sendOTP(email, otp) {
 async function sendLeaveMail(email, fromDate, toDate) {
     try {
         const mailOptions = {
-            from: 'projectmailid7@gmail.com',
+            from: process.env.SOURCE_MAIL,
             to: email,
             subject: 'Leave Request',
             text: 'Your request for leave dated from ' + fromDate + ' to ' + toDate + ' has accepted. Further Details will be communicated later.\n \n Thanks and Regards...',
@@ -173,7 +181,7 @@ app.post("/signup", async function (req, res) {
         return res.render("signup", { isExist: true });
     }
     const hashPass = await bcrypt.hash(password, 12);
-    user = new UserModel({
+    const user = new UserModel({
         username,
         id: lowerCaseId,
         email,
@@ -250,7 +258,7 @@ app.post("/login", async function (req, res) {
                     dutyname: "Not Available", startdate: "Not Available", enddate: "Not Availale",
                     starttime: "Not Available", endtime: "Not Available", bustype: "Not Available"
                 };
-                logHistory = new loginHistory({
+                const logHistory = new loginHistory({
                     id: userDetails.id,
                     timestamp: now,
                     data: {
@@ -273,7 +281,7 @@ app.post("/login", async function (req, res) {
             } else {
                 console.log("This is first timestamp saved case...");
                 randomDutyDetails = randomDuty(dutyDetails);
-                logHistory = new loginHistory({
+                const logHistory = new loginHistory({
                     id: userDetails.id,
                     timestamp: now,
                     data: randomDutyDetails
@@ -339,7 +347,7 @@ app.post("/login", async function (req, res) {
                 const pastDuty = await previousDutyModel.findOne({ id: userDetails.id });
                 getPreviousDuty = getOldDuty.data;
                 if (!pastDuty) {
-                    prevDuty = new previousDutyModel({
+                    const prevDuty = new previousDutyModel({
                         id: userDetails.id,
                         district: getPreviousDuty.district,
                         depo: getPreviousDuty.depo,
@@ -420,7 +428,7 @@ app.post("/admin/:username/add-duty", isAuth, async function (req, res) {
     const getUser = await UserModel.findOne({ username: username, id: userPassingData.id });
     console.log(getUser);
     const { district, depo, dutyname, startdate, enddate, starttime, endtime, bustype } = req.body;
-    duty = new DutyModel({
+    const duty = new DutyModel({
         district, depo, dutyname, startdate, enddate, starttime, endtime, bustype
     });
     const dutySearch = await DutyModel.findOne({ depo: duty.depo, dutyname: duty.dutyname, startdate: duty.startdate, enddate: duty.enddate, starttime: duty.starttime, endtime: duty.endtime });
@@ -446,7 +454,7 @@ app.post("/admin/:username/add-user", isAuth, async function (req, res) {
     const { username, id, email, phone, category, district, depo, password } = req.body;
     const hashPass = await bcrypt.hash(password, 12);
     const lowerCaseId = id.toLowerCase();
-    user = new UserModel({
+    const user = new UserModel({
         username, id: lowerCaseId, email, phone, category, district, depo, password: hashPass, createddate: todayDate()
     });
     const findUser = await UserModel.findOne({ id: lowerCaseId });
@@ -624,7 +632,7 @@ app.post("/:username/leaveform", isAuth, async function (req, res) {
         console.log("This is the case...");
         return res.redirect(`/${getUser.username}/leaveform`);
     }
-    leave = new LeaveModel({
+    const leave = new LeaveModel({
         username,
         id: lowerCaseId,
         email,

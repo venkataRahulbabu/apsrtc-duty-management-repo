@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const Schema=mongoose.Schema;
 
@@ -41,4 +41,6 @@ const previousDutySchema=new Schema({
     }
 });
 
-module.exports=mongoose.model("Previous Duty",previousDutySchema);
+// module.exports=mongoose.model("Previous Duty",previousDutySchema);
+const previousDuty=mongoose.model("Previous Duty",previousDutySchema);
+export default previousDuty;
