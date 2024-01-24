@@ -8,9 +8,13 @@ import MongoDBSession from 'connect-mongodb-session';
 import nodemailer from "nodemailer";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import path from "path";
+import multer from 'multer';
+import fs from "fs";
+import heicConvert from "heic-convert";
 
 dotenv.config();
-mongoose.connect(process.env.MONGO_URL).then(() => {    
+mongoose.connect(process.env.MONGO_URL).then(() => {
     console.log('Connected to MongoDB');
 })
     .catch((err) => {
@@ -19,6 +23,19 @@ mongoose.connect(process.env.MONGO_URL).then(() => {
 
 const app = express();
 const MongoDBStore = MongoDBSession(session);
+const PORT = 3000;
+// const upload = multer({ dest: "uploads/" });
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+const upload = multer({ storage })
 
 // Exported Models from models folder...
 import UserModel from "./models/User.js";
@@ -33,8 +50,11 @@ app.use(express.json());
 app.use(cors());
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
 app.use(cookieParser());
+app.set("views", path.resolve("./views"));
+app.use('/uploads', express.static('uploads'));
 
 // const mongoURI = 'mongodb://localhost:27017/userDB';
 /* const mongoURI = 'mongodb://127.0.0.1:27017/userDB';
@@ -172,9 +192,10 @@ app.get("/signup", function (req, res) {
     return res.render("signup", { isExist: false });
 });
 
-app.post("/signup", async function (req, res) {
-    const { username, id, email, category, district, depo, phone, password } = req.body;
+app.post("/signup", upload.single("profileImage"), async function (req, res) {
+    const { username, id, email, phone, category, district, depo, password } = req.body;
     const lowerCaseId = id.toLowerCase();
+    console.log(req.file);
     const findById = await UserModel.findOne({ id: lowerCaseId });
     const findByEmail = await UserModel.findOne({ email });
     if ((findByEmail || findById) || (findByEmail && findById)) {
@@ -185,10 +206,11 @@ app.post("/signup", async function (req, res) {
         username,
         id: lowerCaseId,
         email,
+        phone,
+        path: req.file.filename,
         category,
         district,
         depo,
-        phone,
         password: hashPass,
         createddate: todayDate()
     });
@@ -372,6 +394,25 @@ app.post("/login", async function (req, res) {
         }
     }
 });
+
+app.post("/:id/update-pic", isAuth, upload.single("newProfileImage"), async function (req, res) {
+    try {
+        const { id } = req.params;
+        // const findImage = await UserModel.updateOne({ id }, { $set: { path: req.file.filename } });
+        const findUser = await UserModel.findOne({ id });
+        if (findUser.path) {
+            const oldImagePath = `uploads/${findUser.path}`;
+            fs.unlinkSync(oldImagePath);
+        }
+        findUser.path = req.file.filename;
+        await findUser.save();
+        req.session.userData.path = req.file.filename;
+        userPassingData = req.session.userData;
+        return res.redirect(`/${findUser.username}/dashboard`);
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+})
 
 app.get("/admin/:username/dashboard", isAuth, async function (req, res) {
     userPassingData = req.session.userData;
@@ -755,6 +796,8 @@ app.post("/:username/settings", isAuth, async function (req, res) {
     }
 });
 
-app.listen(3000, function () {
-    console.log("Server is listening on port 3000...");
-});
+// app.listen(3000, function () {
+//     console.log("Server is listening on port 3000...");
+// });
+
+app.listen(PORT, () => console.log(`Server started at PORT:3000`));

@@ -46,3 +46,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// Function to close the alert box
+function closeAlertBox() {
+    const alertBox = document.getElementById('alertbox');
+    if (alertBox) {
+        alertBox.style.display = 'none';
+    }
+}
+
+// Attach click event to the close button
+const closeAlertButton = document.querySelector('.closealertbutton');
+if (closeAlertButton) {
+    closeAlertButton.addEventListener('click', closeAlertBox);
+}
+
+

@@ -3,32 +3,43 @@
     <div class="relative mx-5 bg-gray-100 mt-20">
         <div
             class="lg:mx-5 sm:mx-auto grid max-w-2xl grid-cols-2 items-center justify-items-center gap-x-8 gap-y-8 px-4 py-12 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8">
-            <div>
+            <div class="p-5">
                 <h2 class="font-medium tracking-wide text-violet-800 sm:text-3xl">Welcome, Mr.<%=
                         userPassingData.username %>
                 </h2>
-                <h2 class="font-medium tracking-wide text-violet-500 sm:text-2xl mt-3">User ID: <%= userPassingData.id %>
+                <h2 class="font-medium tracking-wide text-violet-500 sm:text-2xl mt-3">User ID: <%= userPassingData.id
+                        %>
                 </h2>
-                <p class="font-medium text-zinc-700 text-lg mt-5"><span class="text-xl text-emerald-600">Category:</span> <%= userPassingData.category %>
+                <p class="font-medium text-zinc-700 text-lg mt-5"><span
+                        class="text-xl text-emerald-600">Category:</span>
+                    <%= userPassingData.category %>
                 </p>
-                <p class="font-medium text-zinc-700 text-lg mt-5"><span class="text-xl text-emerald-600">Depot:</span> <%= userPassingData.depo %>
+                <p class="font-medium text-zinc-700 text-lg mt-5"><span class="text-xl text-emerald-600">Depot:</span>
+                    <%= userPassingData.depo %>
                 </p>
-                <p class="font-medium text-zinc-700 text-lg mt-5"><span class="text-xl text-emerald-600">Mobile Number:</span> <%= userPassingData.phone %>
+                <p class="font-medium text-zinc-700 text-lg mt-5"><span class="text-xl text-emerald-600">Mobile
+                        Number:</span>
+                    <%= userPassingData.phone %>
                 </p>
-                <dl class="mt-5 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-16 lg:gap-x-8">
-                    <div class="p-4">
-                        <a href="/<%= userPassingData.username %>/leaveform"
-                            class="bg-violet-600 hover:opacity-85 rounded-md p-2 text-white">Apply Leave</a>
-                    </div>
-                    <!-- <div class="border-t border-gray-200 pt-4">
+                <div class="p-4 mx-auto my-5">
+                    <a href="/<%= userPassingData.username %>/leaveform"
+                        class="bg-violet-600 hover:opacity-85 rounded-md p-2 text-white">Apply Leave</a>
+                </div>
+                <!-- <div class="border-t border-gray-200 pt-4">
                             <a href=""></a>
                         </div> -->
-                </dl>
             </div>
 
-            <div class="bg-gray-100 md:w-40 md:rounded-full">
-                <img src="/images/IMG_10-12-2022(1)-modified.png" alt="Profile Pictire."
-                    class="rounded-lg lg:h-40 md:w-40 h-36 w-36">
+            <div class="w-full md:rounded-lg flex-row gap-5">
+                <img src="/uploads/<%= userPassingData.path %>" alt="Profile Pictire."
+                    class="relative h-60 w-60 rounded-lg mx-auto">
+                <form action="/<%= userPassingData.id %>/update-pic" method="post" class="p-5 flex flex-col items-center"
+                    enctype="multipart/form-data">
+                    <input type="file" name="newProfileImage" id="newProfileImage">
+                    <button type="submit"
+                        class="bg-violet-500 my-2 rounded-md p-1 hover:shadow-md text-white w-32 hover:opacity-85">Update
+                        Profile</button>
+                </form>
             </div>
         </div>
 
